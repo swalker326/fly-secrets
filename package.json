@@ -1,0 +1,24 @@
+{
+  "name": "fly-secrets",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "bin": "./bin/index.js",
+  "files": [
+    "bin"
+  ],
+  "scripts": {
+    "validate": "tsc --noEmit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.8.9"
+  },
+  "dependencies": {
+    "@types/prompts": "^2.4.7",
+    "typescript": "^5.2.2"
+  }
+}
