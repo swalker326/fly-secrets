@@ -48,3 +48,5 @@ This will update the secrets of the `my-app-name` application on fly.io based on
 ## Contributing
 
 If you find any issues or have suggestions for improvements, please open an issue or submit a pull request.
+
+[Github](https://github.com/swalker326/fly-secrets)
