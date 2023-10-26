@@ -4868,7 +4868,7 @@ var require_prompts3 = __commonJS((exports, module) => {
 
 // src/index.ts
 var import_prompts = __toESM(require_prompts3(), 1);
-import {execSync} from "child_process";
+import {spawn} from "child_process";
 import {readFileSync} from "fs";
 var args = process.argv.slice(2);
 var appName;
@@ -4889,16 +4889,16 @@ for (const line of lines) {
   if (secrets) {
     const [key, value] = line.split("=");
     if (!key || !value) {
-      console.log("Skipping line:", line + "\nPlease check your .env file");
+      console.log("Skipping line:", `${line}\nPlease check your .env file`);
       continue;
     }
     secretValues[key] = value;
   }
 }
 console.log("The following secrets will be set:");
-Object.entries(secretValues).forEach(([key, value]) => {
+for (const [key, value] of Object.entries(secretValues)) {
   console.log(`${key}: ${value}`);
-});
+}
 var confirm = await import_prompts.default({
   type: "confirm",
   name: "value",
@@ -4914,16 +4914,30 @@ if (confirm.value) {
     });
     appName = response.value;
   }
+  let command = "fly secrets set";
   for (const [key, value] of Object.entries(secretValues)) {
-    let command = `fly secrets set ${key}="${value}"`;
-    if (appName) {
-      command += ` --app ${appName}`;
-    }
-    console.log("Setting secret:", command);
-    execSync(command);
+    command += ` ${key}="${value}"`;
   }
-  console.log("Fly secrets set!");
-  process.exit(0);
+  if (appName) {
+    command += ` --app ${appName}`;
+  }
+  const child = spawn(command, {
+    shell: true
+  });
+  child.stdout.on("data", (data) => {
+    process.stdout.write(data);
+  });
+  child.stderr.on("data", (data) => {
+    process.stdout.write(data);
+  });
+  child.on("close", (code) => {
+    if (code === 0) {
+      console.log("Fly secrets set!");
+    } else {
+      console.log(`Command exited with code ${code}`);
+    }
+    process.exit(code);
+  });
 } else {
   console.log("Aborted");
 }
