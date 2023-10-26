@@ -9,6 +9,7 @@
     "bin"
   ],
   "scripts": {
+    "build": "bun build ./src/index.ts --outdir ./bin --target=bun",
     "validate": "tsc --noEmit"
   },
   "keywords": [],
