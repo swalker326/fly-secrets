@@ -3,6 +3,8 @@
 import { spawn } from "child_process";
 import { readFileSync } from "fs";
 import prompts from "prompts";
+import { existsSync } from "fs";
+import toml from "@iarna/toml";
 
 const args: string[] = process.argv.slice(2);
 
@@ -54,12 +56,38 @@ const confirm = await prompts({
 
 if (confirm.value) {
 	if (!appName) {
-		const response = await prompts({
-			type: "text",
-			name: "value",
-			message: "Enter app name",
-		});
-		appName = response.value;
+		const tomlFile: string = "./fly.toml";
+		if (existsSync(tomlFile)) {
+			const tomlContent: string = readFileSync(tomlFile, "utf8");
+			const parsedToml = toml.parse(tomlContent);
+			if (parsedToml.app) {
+				const detectedAppName = parsedToml.app as string;
+				if (!detectedAppName) {
+					const setAppName = await prompts({
+						type: "text",
+						name: "value",
+						message: "Please provide app name",
+					});
+					appName = setAppName.value;
+				}
+				const confirmTomlAppName = await prompts({
+					type: "confirm",
+					name: "value",
+					message: `fly.toml detected, would you like to use ${detectedAppName} detected in that file?`,
+					initial: true,
+				});
+				if (confirmTomlAppName.value) {
+					appName = detectedAppName;
+				} else {
+					const setAppName = await prompts({
+						type: "text",
+						name: "value",
+						message: "Please provide app name",
+					});
+					appName = setAppName.value;
+				}
+			}
+		}
 	}
 
 	// Construct the command string with all secrets
