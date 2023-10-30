@@ -6,6 +6,8 @@ A simple utility to automatically update your secrets on [fly.io](https://fly.io
 
 `fly-secrets` reads your `.env` file in the current directory and updates your secrets on fly.io. Only the secrets specified after the `# FLY SECRETS` comment in the `.env` file will be considered for updating.
 
+The script will look for a `fly.toml` file and prompt you if you would like to update the secrets for that app defined in fly.foml. This is overridden if you provide a -a tag to the command.
+
 This tool makes it easy to manage and synchronize your application secrets between your local environment and your fly.io deployment.
 
 ## Installation
